@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  mariadb:
+    image: mariadb:10.3.10
+    environment:
+      MYSQL_ROOT_PASSWORD: goban
+      MYSQL_DATABASE: goban
+      MYSQL_USER: goban
+      MYSQL_PASSWORD: goban
+    ports:
+      - 3306:3306
+    restart: on-failure
+    healthcheck:
+      test: mysqladmin -u"goban" -p"goban" version
+      interval: 15s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+
+  goban:
+    image: thavel/goban:0.1.0
+    volumes:
+      - ./config.yml:/tmp/config.yml
+    depends_on:
+      - mariadb
+    restart: on-failure
+    healthcheck:
+      test: curl -X GET http://localhost/users
+      interval: 15s
+      timeout: 2s
+      retries: 3
+      start_period: 10s

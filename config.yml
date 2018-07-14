@@ -1,0 +1,10 @@
+---
+server:
+  logs: debug
+  port: 8000
+
+persistence:
+  host: localhost
+  database: goban
+  username: goban
+  password: goban
