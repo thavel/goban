@@ -34,10 +34,6 @@
   version = "1.9.4"
 
 [[constraint]]
-  name = "github.com/urfave/cli"
-  version = "1.20.0"
-
-[[constraint]]
   name = "github.com/valyala/fasthttp"
   version = "20180529.0.0"
 
@@ -56,3 +52,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"
