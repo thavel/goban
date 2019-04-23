@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/jinzhu/gorm"
+	"github.com/thavel/goban/pkg/auth"
 	"github.com/valyala/fasthttp"
 )
 
@@ -20,8 +21,12 @@ func GetUser(ctx *fasthttp.RequestCtx) uint {
 	case "":
 		uid = 0
 	case "me":
-		// TODO: get user id from jwt token
-		uid = 0
+		data, err := auth.Token(ctx)
+		if err != nil {
+			uid = 0
+			break
+		}
+		uid = data.User
 	default:
 		parsed, err := strconv.ParseUint(id, 10, 64)
 		if err != nil {

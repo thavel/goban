@@ -17,6 +17,7 @@ type User struct {
 	Role      *string `json:"role"`
 	Firstname *string `json:"firstname" validate:"min=1,max=25"`
 	Lastname  *string `json:"lastname" validate:"min=1,max=25"`
+	TeamID    *uint   `json:"team"`
 }
 
 func init() {
