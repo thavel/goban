@@ -14,14 +14,9 @@ type User struct {
 	Model
 	Email     string  `json:"email" gorm:"not null;unique" validate:"email"`
 	Password  string  `json:"-" gorm:"not null"`
-	Role      string  `json:"role"`
+	Role      *string `json:"role"`
 	Firstname *string `json:"firstname" validate:"min=1,max=25"`
 	Lastname  *string `json:"lastname" validate:"min=1,max=25"`
-}
-
-type Security struct {
-	Password string `json:"-"`
-	Reset    bool   `json:"reset"`
 }
 
 func init() {

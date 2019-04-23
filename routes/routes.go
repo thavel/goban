@@ -5,6 +5,8 @@ import (
 	"github.com/valyala/fasthttp"
 
 	"github.com/thavel/goban/pkg/api"
+	ac "github.com/thavel/goban/pkg/auth"
+	"github.com/thavel/goban/routes/auth"
 	"github.com/thavel/goban/routes/user"
 )
 
@@ -19,5 +21,8 @@ func Handler() func(*fasthttp.RequestCtx) {
 	router.PATCH("/users/:uid", user.Update)
 	router.DELETE("/users/:uid", user.Delete)
 
-	return api.CORS(router.Handler)
+	// API auth
+	router.POST("/auth/token", auth.Auth)
+
+	return ac.RBAC(api.CORS(router.Handler))
 }

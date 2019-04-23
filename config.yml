@@ -8,3 +8,6 @@ persistence:
   database: goban
   username: goban
   password: goban
+
+jwt:
+  secret: goban

@@ -8,9 +8,15 @@ var (
 	// Tables of SQL entities.
 	Tables = []interface{}{
 		new(User),
+		new(Role),
 	}
 	// FKeys are foreign keys.
-	FKeys = []database.FKey{}
+	FKeys = []database.FKey{
+		database.FKey{
+			Model: &User{},
+			Args:  [...]string{"role", "roles(name)", "SET NULL", "NO ACTION"},
+		},
+	}
 )
 
 // Model is the base model for all data models.
