@@ -1,8 +1,5 @@
 <template>
-<v-container>
-    <div>Main</div>
-    <router-view/>
-</v-container>
+<div>Dashboard</div>
 </template>
 
 <script>

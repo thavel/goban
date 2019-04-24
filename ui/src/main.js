@@ -21,6 +21,8 @@ Vue.use(Vuetify, {
   }
 })
 
+Vue.prototype.$api = 'http://localhost:8000';
+
 new Vue({
   router,
   render: h => h(App),
