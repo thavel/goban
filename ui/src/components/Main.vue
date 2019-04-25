@@ -86,9 +86,9 @@ export default {
     title: null,
     menu: [
       {
-        name: 'Calendar',
+        name: 'Absences',
         icon: 'date_range',
-        path: '/calendar'
+        path: '/absences'
       },
       {
         name: 'Settings',

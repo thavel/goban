@@ -77,7 +77,7 @@ export default {
 
 <style>
 .login {
-  background: linear-gradient(var(--v-primary-base), var(--v-accent-base));
+  background: linear-gradient(var(--v-secondary-base), var(--v-accent-base));
 }
 .login-logo {
   margin-top: -75px;

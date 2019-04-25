@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../components/Main'
 import Login from '../components/Login'
-import Calendar from '../components/Calendar'
+import Absences from '../components/Absences'
 
 Vue.use(VueRouter)
 
@@ -14,11 +14,11 @@ export default new VueRouter({
       children: [
         {
           path: '/',
-          redirect: '/calendar'
+          redirect: '/absences'
         },
         {
-          path: 'calendar',
-          component: Calendar
+          path: 'absences',
+          component: Absences
         }
       ]
     },
