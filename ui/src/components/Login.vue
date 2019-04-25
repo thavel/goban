@@ -3,7 +3,7 @@
   <v-layout align-center justify-center>
     <v-flex xs12 sm8 md3 class="text-xs-center">
       <img src="../assets/logo.png" class="login-logo"/>
-      <v-card class="elevation-12" max-width="500px">
+      <v-card class="elevation-12 round" max-width="500px">
         <v-toolbar color="secondary" dark>
           <v-toolbar-title>Authentication</v-toolbar-title>
         </v-toolbar>
@@ -28,7 +28,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" type="submit">Login</v-btn>
+            <v-btn color="secondary" type="submit" round>Login</v-btn>
           </v-card-actions>
         </form>
       </v-card>
@@ -83,5 +83,8 @@ export default {
   margin-top: -75px;
   max-width: 250px;
   margin-bottom: 15px;
+}
+.login .v-card.round {
+  border-radius: 18px;
 }
 </style>

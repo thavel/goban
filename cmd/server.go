@@ -61,7 +61,7 @@ func ensureAdmin() {
 		}
 	}
 
-	email := "admin@goban"
+	email := "admin"
 	var user models.User
 	if res := db.Where("email = ?", email).Find(&user); res.Error != nil {
 		user = models.User{

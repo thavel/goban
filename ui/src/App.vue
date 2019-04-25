@@ -115,4 +115,7 @@ export default {
     transform: translate(38px, 0);
   }
 }
+button.v-btn.v-btn--round {
+  border-radius: 18px;
+}
 </style>

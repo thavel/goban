@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../components/Main'
 import Login from '../components/Login'
-import Dashboard from '../components/Dashboard'
+import Calendar from '../components/Calendar'
 
 Vue.use(VueRouter)
 
@@ -13,9 +13,13 @@ export default new VueRouter({
       component: Main,
       children: [
         {
-          path: '',
-          component: Dashboard
+          path: '/',
+          redirect: '/calendar'
         },
+        {
+          path: 'calendar',
+          component: Calendar
+        }
       ]
     },
     {
