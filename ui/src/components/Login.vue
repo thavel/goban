@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import { Auth } from '../common/auth';
 import axios from 'axios';
 
 export default {
@@ -58,14 +57,14 @@ export default {
     ]
   }),
   mounted() {
-    Auth.clean();
+    this.$auth.clean();
   },
 
   methods: {
     login: async function() {
       try {
         var res = await axios.post(this.$api + '/auth/token', this.input);
-        Auth.set(res.data.token);
+        this.$auth.set(res.data.token);
         this.$router.replace({path: '/'});
       } catch(e) {
         this.error = true;

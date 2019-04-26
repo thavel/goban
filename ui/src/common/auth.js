@@ -1,4 +1,4 @@
-export const Auth = {
+export default {
   token: null,
   set(token) {
     this.token = token;

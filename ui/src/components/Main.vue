@@ -156,4 +156,9 @@ export default {
 .tiny-menu .v-list__tile__action {
   min-width: 35px;
 }
+.v-menu__content.menuable__content__active {
+  margin-top: 8px;
+  border-radius: 14px;
+}
+
 </style>

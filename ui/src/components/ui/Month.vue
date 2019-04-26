@@ -7,7 +7,8 @@
       day: true,
       header: header,
       weekend: (!header && day.day() > 4),
-      today: (header && isToday(day))
+      today: (header && isToday(day)),
+      ...absence(day)
     }"
   >
     {{ header ? day.format('dddd')[0] : day.date() }}
@@ -16,18 +17,22 @@
 </template>
 
 <script>
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+const moment = extendMoment(Moment);
 
 export default {
   props: {
     year: Number,
     month: Number,
-    header: Boolean
+    header: Boolean,
+    data: Array
   },
   data: function() {
     return {
       days: [],
-      today: moment()
+      today: moment(),
+      absences: []
     }
   },
   mounted() {
@@ -38,8 +43,41 @@ export default {
       ref.add(1, 'days');
     }
   },
+  watch: {
+    'data': function(d) {
+      this.parse(d);
+    }
+  },
 
   methods: {
+    parse: function(data) {
+      if (!data || data.length < 1) {
+        return;
+      }
+      for (var i = 0; i < data.length; i++) {
+        let from = moment(data[i].from);
+        let to = moment(data[i].to);
+        this.absences.push(moment.range(from, to));
+      }
+    },
+    absence: function(morning) {
+      let afternoon = morning.clone();
+      afternoon.add(14, 'hours');
+
+      for (var i = 0; i < this.absences.length; i++) {
+        let absence = this.absences[i];
+        let am = absence.contains(morning);
+        let pm = absence.contains(afternoon);
+        if (am || pm) {
+          return {
+            'absence': am && pm,
+            'absence-am': am && !pm,
+            'absence-pm': !am && pm
+          };
+        }
+      }
+      return {}
+    },
     isToday: function(day) {
       return (
         day.year() == this.today.year() &&
@@ -62,14 +100,27 @@ export default {
   line-height: 35px;
 }
 .month .day.header {
+  color: var(--v-primary-base);
+  font-weight: bold;
+}
+.month .day.today {
+  border: solid 1px var(--v-primary-base);
+  border-radius: 50%;
+}
+.month .day.absence {
+  background-color: var(--v-accent-base);
+  color: var(--v-secondary-base);
+}
+.month .day.absence-am {
+  background: linear-gradient(to top left, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%);
+  color: var(--v-secondary-base);
+}
+.month .day.absence-pm {
+  background: linear-gradient(to bottom right, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%);
   color: var(--v-secondary-base);
 }
 .month .day.weekend {
   background-color: #cccccc;
+  color: #707070;
 }
-.month .day.today {
-  border: solid 2px var(--v-accent-base);
-  border-radius: 50%;
-}
-
 </style>

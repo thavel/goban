@@ -46,5 +46,5 @@ func Handler() func(*fasthttp.RequestCtx) {
 	// API auth
 	router.POST("/auth/token", auth.Auth)
 
-	return ac.RBAC(api.CORS(router.Handler))
+	return api.CORS(ac.RBAC(router.Handler))
 }

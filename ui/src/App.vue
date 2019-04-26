@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { Auth } from '@/common/auth';
 import axios from 'axios';
 
 export default {
@@ -28,14 +27,14 @@ export default {
 
   methods: {
     autoLogin: async function() {
-      let token = Auth.retrive();
+      let token = this.$auth.retrive();
       if (token == null) {
         this.failure();
         return;
       }
       try {
         let res = await axios.post(this.$api + '/auth/token', {token: token});
-        Auth.set(res.data.token);
+        this.$auth.set(res.data.token);
         this.success();
       } catch(e) {
         this.failure();

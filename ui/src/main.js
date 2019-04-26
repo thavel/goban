@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import Vuetify from 'vuetify'
 import router from './common/router'
+import auth from './common/auth'
 import 'vuetify/dist/vuetify.min.css'
 
 Vue.config.productionTip = false
@@ -21,6 +22,7 @@ Vue.use(Vuetify, {
   }
 })
 
+Vue.prototype.$auth = auth;
 Vue.prototype.$api = 'http://localhost:8000';
 
 new Vue({
