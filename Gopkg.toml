@@ -49,10 +49,10 @@
   branch = "v2"
   name = "gopkg.in/validator.v2"
 
-[prune]
-  go-tests = true
-  unused-packages = true
-
 [[constraint]]
   branch = "master"
   name = "golang.org/x/crypto"
+
+[prune]
+  go-tests = true
+  unused-packages = true

@@ -53,11 +53,18 @@ export default {
 </script>
 
 <style>
+body .application.theme--light {
+  background-color: rgb(238, 238, 238);
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+#app .v-btn .v-btn__content .v-icon,
+#app .theme--light.v-icon{
+  color: var(--v-secondary-base);
 }
 #loader {
   display: inline-block;

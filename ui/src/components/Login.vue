@@ -4,17 +4,18 @@
     <v-flex xs12 sm8 md3 class="text-xs-center">
       <img src="../assets/logo.png" class="login-logo"/>
       <v-card class="elevation-12 round" max-width="500px">
-        <v-toolbar color="secondary" dark>
-          <v-toolbar-title>Authentication</v-toolbar-title>
+        <v-toolbar color="primary" dark>
+          <v-toolbar-title>Goban</v-toolbar-title>
         </v-toolbar>
         <form ref="loginForm" @submit.prevent="login" lazy-validation>
-          <v-card-text>
+          <v-card-text class="login-card">
             <v-text-field
               prepend-icon="person"
               v-model="input.user"
               name="user"
               label="user"
               type="text"
+              color="secondary"
               :rules="rules">
             </v-text-field>
             <v-text-field
@@ -23,6 +24,7 @@
               name="password"
               label="Password"
               type="password"
+              color="secondary"
               :rules="rules">
             </v-text-field>
           </v-card-text>
@@ -76,14 +78,23 @@ export default {
 
 <style>
 .login {
-  background: linear-gradient(var(--v-secondary-base), var(--v-accent-base));
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.8)), url('../assets/bamboo.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+
 }
 .login-logo {
   margin-top: -75px;
   max-width: 250px;
+  max-height: 200px;
   margin-bottom: 15px;
 }
 .login .v-card.round {
   border-radius: 18px;
+  background: linear-gradient(0deg, white 90%, var(--v-primary-base) 10%);
+} 
+.v-toolbar__content div.v-toolbar__title {
+  margin: auto;
 }
 </style>

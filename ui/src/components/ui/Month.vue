@@ -112,11 +112,18 @@ export default {
   color: var(--v-secondary-base);
 }
 .month .day.absence-am {
-  background: linear-gradient(to top left, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%);
+  /* background: linear-gradient(to top left, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%); */
+  background: linear-gradient(90deg, var(--v-accent-base) 50%, transparent 50%);
+  /* border: solid 1px var(--v-accent-base); */
+  outline: 2px dashed var(--v-accent-base);
+  outline-offset: -2px;
   color: var(--v-secondary-base);
 }
 .month .day.absence-pm {
-  background: linear-gradient(to bottom right, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%);
+  /* background: linear-gradient(to bottom right, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%); */
+  background: linear-gradient(90deg, transparent 50%, var(--v-accent-base) 50%);
+  outline: 2px dashed var(--v-accent-base);
+  outline-offset: -2px;
   color: var(--v-secondary-base);
 }
 .month .day.weekend {
