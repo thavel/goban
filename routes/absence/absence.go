@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/jinzhu/gorm"
 	"github.com/valyala/fasthttp"
 
 	"github.com/thavel/goban/models"
@@ -13,9 +14,41 @@ import (
 	"github.com/thavel/goban/routes/user"
 )
 
+func filtered(query *gorm.DB, ctx *fasthttp.RequestCtx) *gorm.DB {
+	args := ctx.QueryArgs()
+
+	// Handles 'from'/'to' key
+	from := dbTime(args.Peek("from"))
+	to := dbTime(args.Peek("to"))
+	if from != "" && to != "" {
+		query = query.Where(
+			"(`from` >= ? OR `to` >= ?) OR (`to` <= ? OR `from` <= ?)",
+			from, from, to, to,
+		)
+	} else if from != "" {
+		query = query.Where("`from` >= ? OR `to` >= ?", from, from)
+	} else if to != "" {
+		query = query.Where("`to` <= ? OR `from` <= ?", to, to)
+	}
+
+	// Handles 'team' key
+	team := args.Peek("team")
+	if team != nil {
+		tid, err := strconv.ParseUint(string(team), 10, 64)
+		if err == nil {
+			query = query.Joins(
+				"JOIN users ON users.id = absences.user_id AND users.team_id = ?",
+				tid,
+			)
+		}
+	}
+
+	return query
+}
+
 func ListAllAbsences(ctx *fasthttp.RequestCtx) {
 	query := database.DB().Model(&models.Absence{})
-	query = api.Filtered(query, ctx)
+	query = filtered(query, ctx)
 
 	var entities []models.Absence
 	res := api.Paged(query, ctx).Find(&entities)
@@ -38,7 +71,7 @@ func ListAllAbsences(ctx *fasthttp.RequestCtx) {
 func ListAbsences(ctx *fasthttp.RequestCtx) {
 	query := database.DB().Model(&models.Absence{})
 	query = user.FromUser(query, ctx)
-	query = api.Filtered(query, ctx)
+	query = filtered(query, ctx)
 
 	var entities []models.Absence
 	res := api.Paged(query, ctx).Find(&entities)
