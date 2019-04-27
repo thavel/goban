@@ -69,7 +69,7 @@
       - Made by
       <a href="https://github.com/thavel"><v-img v-if="author" :src="author" width="16px" height="16px"/></a>
       with
-      <v-icon size="16px" color="error">favorite</v-icon>
+      <v-icon size="19px" color="error">favorite</v-icon>
     </div>
   </v-footer>
 </div>
@@ -137,6 +137,9 @@ export default {
   background-color: transparent;
   color: var(--v-secondary-base);
 }
+#main #main-footer {
+  background-color: transparent;
+}
 #main #main-footer .v-image,
 #main #main-footer img {
   display: inline-block;
@@ -153,7 +156,7 @@ export default {
   width: auto;
 }
 #main #footer-content {
-  margin-right: 20px;
+  margin-right: 10px;
 }
 #main .v-list__tile__title.title {
   /* color: var(--v-accent-base); */
@@ -181,6 +184,7 @@ export default {
 .colorful-title .v-card__title {
   display: inline-block;
   position: relative;
+  padding: 8px;
   width: 94%;
   left: 3%;
   right: 3%;

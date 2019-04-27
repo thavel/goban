@@ -22,7 +22,7 @@ func filtered(query *gorm.DB, ctx *fasthttp.RequestCtx) *gorm.DB {
 	to := dbTime(args.Peek("to"))
 	if from != "" && to != "" {
 		query = query.Where(
-			"(`from` >= ? OR `to` >= ?) OR (`to` <= ? OR `from` <= ?)",
+			"(`from` >= ? OR `to` >= ?) AND (`to` <= ? OR `from` <= ?)",
 			from, from, to, to,
 		)
 	} else if from != "" {

@@ -6,7 +6,7 @@
     :class="{
       day: true,
       header: header,
-      weekend: (!header && day.day() > 4),
+      weekend: (!header && (day.day() == 0 || day.day() == 6)),
       today: (header && isToday(day)),
       ...absence(day)
     }"
@@ -42,11 +42,7 @@ export default {
       this.days.push(ref.clone());
       ref.add(1, 'days');
     }
-  },
-  watch: {
-    'data': function(d) {
-      this.parse(d);
-    }
+    this.parse(this.data);
   },
 
   methods: {
@@ -92,12 +88,14 @@ export default {
 <style>
 .month .day {
   margin: 2px 0;
-  width: 35px;
-  min-width: 30px;
-  height: 35px;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
+  height: 28px;
   text-align: center;
   vertical-align: middle;
-  line-height: 35px;
+  line-height: 28px;
+  font-size: 12px;
 }
 .month .day.header {
   color: var(--v-primary-base);
@@ -112,15 +110,12 @@ export default {
   color: var(--v-secondary-base);
 }
 .month .day.absence-am {
-  /* background: linear-gradient(to top left, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%); */
   background: linear-gradient(90deg, var(--v-accent-base) 50%, transparent 50%);
-  /* border: solid 1px var(--v-accent-base); */
   outline: 2px dashed var(--v-accent-base);
   outline-offset: -2px;
   color: var(--v-secondary-base);
 }
 .month .day.absence-pm {
-  /* background: linear-gradient(to bottom right, transparent 0%, transparent 50%, var(--v-accent-base) 50%, var(--v-accent-base) 100%); */
   background: linear-gradient(90deg, transparent 50%, var(--v-accent-base) 50%);
   outline: 2px dashed var(--v-accent-base);
   outline-offset: -2px;
