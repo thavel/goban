@@ -110,7 +110,7 @@ export default {
 
   methods: {
     responsive: function() {
-      this.mini = window.innerWidth <= 1250;
+      this.mini = window.innerWidth <= 1260;
       if (!this.mini) {
         this.drawer = true;
       }

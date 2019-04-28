@@ -1,5 +1,5 @@
 <template>
-<v-card class="colorful-title">
+<v-card class="colorful-title absences" :class="{'absences-content': !isEmpty(absences)}">
   <v-card-title>
     <v-layout align-center justify-center row fill-height>
       <v-btn class="month-today" flat icon @click="reset()" :disabled="today.isSameOrAfter(current)">
@@ -15,7 +15,18 @@
   </v-card-title>
   <v-card-text v-if="!isEmpty(absences)">
     <v-layout align-center justify-center row fill-height :key="year + '-' + month">
-      <div class="team-picker"/>
+      <v-select class="team-picker"
+        label="Team"
+        v-model="filter"
+        :items="teams"
+        item-text="name" item-value="id"
+        @change="fetchAbsences()"
+      >
+        <template v-slot:prepend-item>
+          <v-list-tile ripple @click="filter = null; fetchAbsences()">Everybody</v-list-tile>
+          <v-divider/>
+        </template>
+      </v-select>
       <month class="absence-header" :month="month" :year="year" :header="true"/>
     </v-layout>
     <v-layout
@@ -23,7 +34,7 @@
       v-for="(abs, usr) in absences"
       :key="year + '-' + month + '-' + usr"
     >
-      <inline-user :id="Number(usr)"/>
+      <inline-user :id="Number(usr)" class="absence-user"/>
       <month :month="month" :year="year" :data="abs"/>
     </v-layout>
   </v-card-text>
@@ -46,10 +57,13 @@ export default {
     current: moment(),
     year: moment().year(),
     month: moment().month(),
-    absences: {}
+    absences: {},
+    teams: [],
+    filter: null
   }),
   mounted() {
-    this.fetch();
+    this.fetchTeams();
+    this.fetchAbsences();
   },
   computed: {
     from() {
@@ -71,9 +85,16 @@ export default {
     uri: function(datetime) {
       return encodeURIComponent(datetime.format());
     },
-    fetch: async function() {
+    fetchTeams: async function() {
+      let res = await axios.get(this.$api + '/teams', this.$auth.header());
+      this.teams = res.data;
+    },
+    fetchAbsences: async function() {
       this.absences = {};
-      let query = '?from=' + this.uri(this.from) + '&to=' + this.uri(this.to);
+      var query = '?from=' + this.uri(this.from) + '&to=' + this.uri(this.to);
+      if (this.filter) {
+        query += '&team=' + encodeURIComponent(this.filter);
+      }
       let res = await axios.get(this.$api + '/absences' + query, this.$auth.header());
       let absences = {};
       for (var ab of res.data) {
@@ -85,9 +106,10 @@ export default {
       this.absences = absences;
     },
     navigate: function(datetime) {
+      this.filter = null;
       this.year = datetime.year();
       this.month = datetime.month();
-      this.fetch();
+      this.fetchAbsences();
     },
     reset: function() {
       this.current = this.today.clone();
@@ -107,10 +129,16 @@ export default {
 </script>
 
 <style>
+.absences.absences-content {
+  min-width: 1100px;
+}
+
+.absence-user,
 .team-picker {
   width: 175px;
   min-width: 175px;
   max-width: 175px;
+  margin-right: 50px;
 }
 .month-picker {
   color: white;
