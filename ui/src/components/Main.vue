@@ -1,8 +1,10 @@
 <template>
 <div id="main">
   <v-navigation-drawer v-model="drawer" fixed app dark>
+    <!-- Menu -->
     <v-list>
-      <v-list-tile avatar id="main-logo">
+      <!-- Menu header -->
+      <v-list-tile class="menu-header" avatar id="main-logo">
         <v-list-tile-avatar>
           <img src="../assets/mini-logo.png"/>
         </v-list-tile-avatar>
@@ -11,22 +13,57 @@
         </v-list-tile-title>
       </v-list-tile>
       <v-divider id="main-title-divider"/>
-
-      <v-list-tile
+      <!-- Menu content -->
+      <div
+        class="menu-content"
         v-for="(item, i) in menu"
         :key="i"
-        :to="item.path"
-        @click="setTitle"
       >
-        <v-list-tile-action>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+        <!-- Menu item -->
+        <v-list-tile
+          v-if="item.children == undefined"
+          :to="item.path"
+          @click="setTitle"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <!-- Menu groups -->
+        <v-list-group
+          v-else
+          v-model="item.open"
+          :to="item.path"
+        >
+          <v-list-tile slot="activator">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile
+            v-for="(child, j) in item.children"
+            :key="i+''+j"
+            :to="child.path"
+            @click="setTitle"
+          >
+            <v-list-tile-action>
+              <v-icon>{{ child.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ child.name }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list-group>
+      </div>
     </v-list>
   </v-navigation-drawer>
+  <!-- Toolbar -->
   <v-toolbar app fixed flat id="main-toolbar">
     <v-toolbar-side-icon @click.stop="drawer = !drawer" v-if="mini"/>
     <v-toolbar-title v-if="title">{{ title }}</v-toolbar-title>
@@ -40,12 +77,20 @@
           <v-card class="tiny-menu">
             <v-list dense>
               <v-list-tile to="/profile">
-                <v-list-tile-action><v-icon>person</v-icon></v-list-tile-action>
-                <v-list-tile-content><v-list-tile-title>Profile</v-list-tile-title></v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>person</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>Profile</v-list-tile-title>
+                </v-list-tile-content>
               </v-list-tile>
               <v-list-tile to="/login">
-                <v-list-tile-action><v-icon>input</v-icon></v-list-tile-action>
-                <v-list-tile-content><v-list-tile-title>logout</v-list-tile-title></v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>input</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>logout</v-list-tile-title>
+                </v-list-tile-content>
               </v-list-tile>
             </v-list>
           </v-card>
@@ -53,6 +98,7 @@
       </v-flex>
     </v-toolbar-items>
   </v-toolbar>
+  <!-- Page content -->
   <v-content>
     <v-container fluid fill-height>
       <v-layout justify-center align-center>
@@ -62,6 +108,7 @@
       </v-layout>
     </v-container>
   </v-content>
+  <!-- Footer -->
   <v-footer inset fixed id="main-footer">
     <v-spacer/>
     <div id="footer-content">
@@ -76,7 +123,6 @@
 </template>
 
 <script>
-import _ from 'lodash';
 import axios from 'axios';
 
 export default {
@@ -87,8 +133,20 @@ export default {
     menu: [
       {
         name: 'Absences',
-        icon: 'date_range',
-        path: '/absences'
+        icon: 'beach_access',
+        open: false,
+        children: [
+          {
+            name: 'Calendar',
+            icon: 'date_range',
+            path: '/absences',
+          },
+          {
+            name: 'My absences',
+            icon: 'assignment',
+            path: '/my_absences',
+          }
+        ]
       },
       {
         name: 'Settings',
@@ -123,9 +181,21 @@ export default {
         this.author = '../assets/logo.png';
       }
     },
+    searchMenuItem: function(path) {
+      for (var i of this.menu) {
+        if (i.path === path) {
+          return i;
+        }
+        for (var c of i.children || []) {
+          if (c.path === path) {
+            return c;
+          }
+        }
+      }
+      return null;
+    },
     setTitle: function() {
-      let path = this.$router.history.current.path;
-      let item = _.find(this.menu, {path: path});
+      let item = this.searchMenuItem(this.$router.history.current.path);
       this.title = item.name;
     }
   }
@@ -149,7 +219,7 @@ export default {
   margin-bottom: 35px;
 }
 #main .v-avatar img {
-  margin-top: 8px;
+  margin-top: 10px;
   margin-left: 15px;
   border-radius: 0;
   height: 65px;
@@ -158,18 +228,33 @@ export default {
 #main #footer-content {
   margin-right: 10px;
 }
-#main .v-list__tile__title.title {
-  /* color: var(--v-accent-base); */
+#main .menu-header .title {
   margin-left: 15px;
-  width: auto;
 }
-#main .v-list__tile.v-list__tile--link {
-  margin: 15px;
+#main .menu-content .v-list__group__header,
+#main .menu-content .v-list__tile {
   border-radius: 8px;
 }
-#main .v-list__tile--active.v-list__tile--link {
+#main .menu-content .v-list__group__header,
+#main .menu-content .v-list__group__items,
+#main .menu-content > div[role=listitem] {
+  margin: 15px;
+}
+#main .menu-content .v-list__group__items div[role=listitem] {
+  margin-bottom: 15px;
+}
+#main .menu-content .v-list__tile--active {
   background-color: var(--v-secondary-base);
   color: white !important;
+}
+#main .menu-content .v-list__group__items .v-list__tile--active {
+  background-color: var(--v-tertiary-base);
+  color: white !important;
+  /* filter: brightness(200%); */
+}
+#main .menu-content .v-list__group--active:after,
+#main .menu-content .v-list__group--active:before {
+  background: none;
 }
 .tiny-menu .v-list__tile__action {
   min-width: 35px;

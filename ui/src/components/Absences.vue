@@ -39,6 +39,7 @@
     </v-layout>
   </v-card-text>
   <v-card-text v-if="isEmpty(absences)" class="absence-empty">
+    <img src="../assets/mini-logo.png"/><br/>
     No absence has been registered for this month
   </v-card-text>
 </v-card>
@@ -90,7 +91,6 @@ export default {
       this.teams = res.data;
     },
     fetchAbsences: async function() {
-      this.absences = {};
       var query = '?from=' + this.uri(this.from) + '&to=' + this.uri(this.to);
       if (this.filter) {
         query += '&team=' + encodeURIComponent(this.filter);
@@ -160,6 +160,11 @@ export default {
   max-width: 500px;
   text-align: center;
   color: #707070;
-  font-size: 12px;
+  font-size: 13px;
+}
+.absence-empty img {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+  opacity: 0.35;
 }
 </style>
