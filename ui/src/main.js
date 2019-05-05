@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Vuetify from 'vuetify'
+import VCalendar from 'v-calendar'
 import router from './common/router'
 import auth from './common/auth'
 import 'vuetify/dist/vuetify.min.css'
@@ -22,6 +23,8 @@ Vue.use(Vuetify, {
     customProperties: true
   }
 })
+
+Vue.use(VCalendar, {componentPrefix: 'vc'});
 
 Vue.prototype.$auth = auth;
 Vue.prototype.$api = 'http://localhost:8000';

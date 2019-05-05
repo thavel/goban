@@ -14,12 +14,7 @@ import (
 	"github.com/thavel/goban/routes/user"
 )
 
-func filtered(query *gorm.DB, ctx *fasthttp.RequestCtx) *gorm.DB {
-	args := ctx.QueryArgs()
-
-	// Handles 'from'/'to' key
-	from := dbTime(args.Peek("from"))
-	to := dbTime(args.Peek("to"))
+func fromto(query *gorm.DB, from, to string) *gorm.DB {
 	if from != "" && to != "" {
 		query = query.Where(
 			"(`from` >= ? OR `to` >= ?) AND (`to` <= ? OR `from` <= ?)",
@@ -30,6 +25,16 @@ func filtered(query *gorm.DB, ctx *fasthttp.RequestCtx) *gorm.DB {
 	} else if to != "" {
 		query = query.Where("`to` <= ? OR `from` <= ?", to, to)
 	}
+	return query
+}
+
+func filtered(query *gorm.DB, ctx *fasthttp.RequestCtx) *gorm.DB {
+	args := ctx.QueryArgs()
+
+	// Handles 'from'/'to' key
+	from := dbTime(args.Peek("from"))
+	to := dbTime(args.Peek("to"))
+	query = fromto(query, from, to)
 
 	// Handles 'team' key
 	team := args.Peek("team")
@@ -105,7 +110,16 @@ func CreateAbsence(ctx *fasthttp.RequestCtx) {
 	}
 	entity.UserID = uid
 
+	// Check if another absence overlaps the new one
 	db := database.DB()
+	query := db.Model(&models.Absence{}).Where("user_id = ?", uid)
+	query = fromto(query, entity.From.String(), entity.To.String())
+	var match []models.Absence
+	if res := query.Find(&match); res.Error != nil || len(match) > 0 {
+		api.Response(ctx, 409, "overlapping")
+		return
+	}
+
 	if res := db.Create(&entity); res.Error != nil {
 		api.Response(ctx, 500, "something went wrong")
 		return
@@ -150,6 +164,15 @@ func UpdateAbsence(ctx *fasthttp.RequestCtx) {
 	}
 	if err := entity.Validate(); err != nil {
 		api.Response(ctx, 400, fmt.Sprintf("invalid updates: %s", err))
+		return
+	}
+	// Check if another absence overlaps the new one
+	query := db.Model(&models.Absence{})
+	query = query.Where("user_id = ?", entity.UserID).Where("id != ?", uuid)
+	query = fromto(query, entity.From.String(), entity.To.String())
+	var match []models.Absence
+	if res := query.Find(&match); res.Error != nil || len(match) > 0 {
+		api.Response(ctx, 409, "overlapping")
 		return
 	}
 	if res := db.Save(&entity); res.Error != nil {

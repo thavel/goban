@@ -139,12 +139,12 @@ export default {
           {
             name: 'Calendar',
             icon: 'date_range',
-            path: '/absences',
+            path: '/calendar',
           },
           {
             name: 'My absences',
             icon: 'assignment',
-            path: '/my_absences',
+            path: '/absences',
           }
         ]
       },

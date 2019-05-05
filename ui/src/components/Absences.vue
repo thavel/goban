@@ -14,34 +14,34 @@
     </v-layout>
   </v-card-title>
   <v-card-text v-if="!isEmpty(absences)">
-    <v-layout align-center justify-center row fill-height :key="year + '-' + month">
-      <v-select class="team-picker"
-        label="Team"
-        v-model="filter"
-        :items="teams"
-        item-text="name" item-value="id"
-        @change="fetchAbsences()"
-      >
-        <template v-slot:prepend-item>
-          <v-list-tile ripple @click="filter = null; fetchAbsences()">Everybody</v-list-tile>
-          <v-divider/>
-        </template>
-      </v-select>
-      <month class="absence-header" :month="month" :year="year" :header="true"/>
-    </v-layout>
-    <v-layout
-      align-center justify-center row fill-height
-      v-for="(abs, usr) in absences"
-      :key="year + '-' + month + '-' + usr"
+    <v-data-table
+      :headers="headers"
+      :items="content"
+      hide-actions
     >
-      <inline-user :id="Number(usr)" class="absence-user"/>
-      <month :month="month" :year="year" :data="abs"/>
-    </v-layout>
+      <template slot="items" slot-scope="props">
+        <tr @click="select(absences[props.item.index])">
+          <td class="text-xs-center">{{ props.item.reason }}</td>
+          <td class="text-xs-center">{{ props.item.from }}</td>
+          <td class="text-xs-center">{{ props.item.to }}</td>
+        </tr>
+      </template>
+    </v-data-table>
   </v-card-text>
   <v-card-text v-if="isEmpty(absences)" class="absence-empty">
     <img src="../assets/mini-logo.png"/><br/>
     No absence has been registered for this month
   </v-card-text>
+  <v-fab-transition>
+    <v-btn dark color="accent" fab fixed bottom right @click="create()">
+      <v-icon>add</v-icon>
+    </v-btn>
+  </v-fab-transition>
+  <absence
+    :model="selected"
+    :reasons="reasons"
+    @done="done($event)"
+  />
 </v-card>
 </template>
 
@@ -49,8 +49,8 @@
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
-import Month from '@/components/ui/Month.vue';
-import InlineUser from '@/components/ui/InlineUser.vue';
+import auth from '@/common/auth';
+import Absence from '@/components/Absence.vue';
 
 export default {
   data: () => ({
@@ -58,13 +58,21 @@ export default {
     current: moment(),
     year: moment().year(),
     month: moment().month(),
-    absences: {},
-    teams: [],
-    filter: null
+    absences: [],
+    reasons: [],
+    selected: {
+      new: false,
+      entity: null
+    },
+    headers: [
+      { text: 'Reason', value: 'reason', align: 'center' },
+      { text: 'From', value: 'from', align: 'center' },
+      { text: 'Until', value: 'to', align: 'center' },
+    ]
   }),
   mounted() {
-    this.fetchTeams();
     this.fetchAbsences();
+    this.fetchReasons();
   },
   computed: {
     from() {
@@ -75,38 +83,51 @@ export default {
       to.add(1, 'months');
       to.subtract(1, 'hours');
       return to;
-    }
+    },
+    content: function() {
+      if (!this.reasons || !this.absences) {
+        return [];
+      }
+      let reasons = _.chain(this.reasons).keyBy('id').mapValues('label').value();
+      let absences = [];
+      for (var i = 0; i < this.absences.length; i++) {
+        let abs = this.absences[i];
+        absences.push({
+          index: i,
+          reason: reasons[abs.reason],
+          from: moment(abs.from).format("dddd, MMMM Do"),
+          to: moment(abs.to).format("dddd, MMMM Do"),
+        })
+      }
+      return absences;
+    },
   },
   components: {
-    Month,
-    InlineUser
+    Absence
   },
 
   methods: {
     uri: function(datetime) {
       return encodeURIComponent(datetime.format());
     },
-    fetchTeams: async function() {
-      let res = await axios.get(this.$api + '/teams', this.$auth.header());
-      this.teams = res.data;
-    },
-    fetchAbsences: async function() {
+    fetchAbsences: auth.wrap(async function() {
       var query = '?from=' + this.uri(this.from) + '&to=' + this.uri(this.to);
-      if (this.filter) {
-        query += '&team=' + encodeURIComponent(this.filter);
-      }
-      let res = await axios.get(this.$api + '/absences' + query, this.$auth.header());
-      let absences = {};
-      for (var ab of res.data) {
-        if (!absences[ab.user]) {
-          absences[ab.user] = [];
-        }
-        absences[ab.user].push(ab);
-      }
-      this.absences = absences;
+      let res = await axios.get(this.$api + '/users/me/absences' + query, this.$auth.header());
+      this.absences = res.data;
+    }),
+    fetchReasons: auth.wrap(async function() {
+      let res = await axios.get(this.$api + '/reasons', this.$auth.header());
+      this.reasons = res.data;
+    }),
+    create: function() {
+      this.selected.new = true;
+      this.selected.entity = {};
+    },
+    select: function(absence) {
+      this.selected.new = false;
+      this.selected.entity = absence;
     },
     navigate: function(datetime) {
-      this.filter = null;
       this.year = datetime.year();
       this.month = datetime.month();
       this.fetchAbsences();
@@ -123,37 +144,18 @@ export default {
       this.current.add(1, 'month');
       this.navigate(this.current);
     },
-    isEmpty: _.isEmpty,
+    done: function(reload) {
+      this.selected.entity = null;
+      if (reload) {
+        this.fetchAbsences();
+      }
+    },
+    isEmpty: _.isEmpty
   }
 }
 </script>
 
 <style>
-.absences.absences-content {
-  min-width: 1100px;
-}
-
-.absence-user,
-.team-picker {
-  width: 175px;
-  min-width: 175px;
-  max-width: 175px;
-  margin-right: 50px;
-}
-.month-picker {
-  color: white;
-  font-weight: bold;
-  width: 115px;
-  min-width: 115px;
-  max-width: 115px;
-  text-align: center;
-}
-.month-today.v-btn.v-btn--disabled i.v-icon {
-  color: transparent !important;
-}
-.absence-header {
-  margin-bottom: 8px;
-}
 .absence-empty {
   width: 500px;
   min-width: 500px;
@@ -166,5 +168,12 @@ export default {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
   opacity: 0.35;
+}
+.absences.absences-content {
+  min-width: 1100px;
+}
+.v-btn.v-btn--floating.v-btn--fixed.v-btn--bottom.v-btn--right {
+  bottom: 64px;
+  right: 32px;
 }
 </style>

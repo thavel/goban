@@ -42,7 +42,6 @@ export default {
     },
     success: function() {
       this.loading = false;
-      this.$router.replace({path: '/'});
     },
     failure: function() {
       this.loading = false;

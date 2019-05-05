@@ -18,7 +18,6 @@ func CORS(handler fasthttp.RequestHandler) fasthttp.RequestHandler {
 			ctx.SetStatusCode(200)
 			return
 		}
-
 		handler(ctx)
 	})
 }

@@ -122,6 +122,8 @@ export default {
   color: var(--v-secondary-base);
 }
 .month .day.weekend {
+  background: none;
+  outline: none;
   background-color: #cccccc;
   color: #707070;
 }
