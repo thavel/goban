@@ -9,3 +9,7 @@ Ready-to-go management tool for small enterprises.
 * Team management
 * Absence management
 * Kanban
+
+## Deployment
+
+A Docker image is available at `thavel/goban:latest` (sync with master).

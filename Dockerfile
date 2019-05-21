@@ -12,4 +12,5 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=0 /go/src/github.com/thavel/goban/goban .
 COPY config.yml .
+COPY rbac.conf .
 ENTRYPOINT [ "./goban", "server" ]
