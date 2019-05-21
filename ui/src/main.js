@@ -27,7 +27,8 @@ Vue.use(Vuetify, {
 Vue.use(VCalendar, {componentPrefix: 'vc'});
 
 Vue.prototype.$auth = auth;
-Vue.prototype.$api = 'http://localhost:8000';
+Vue.prototype.$api = window.location.href.split("/ui/")[0];
+//Vue.prototype.$api = 'http://localhost:8000';
 
 new Vue({
   router,
