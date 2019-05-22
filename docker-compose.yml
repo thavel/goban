@@ -19,11 +19,13 @@ services:
       start_period: 5s
 
   goban:
-    image: thavel/goban:0.1.0
+    image: thavel/goban:latest
     volumes:
-      - ./config.yml:/tmp/config.yml
+      - ./config.yml:/root/config.yml
     depends_on:
       - mariadb
+    ports:
+      - 8888:8000
     restart: on-failure
     healthcheck:
       test: curl -X GET http://localhost/users
