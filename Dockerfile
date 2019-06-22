@@ -1,9 +1,8 @@
 # Build stage backend
-FROM golang:1.10.3-alpine AS build-backend
-WORKDIR /go/src/github.com/thavel/goban/
+FROM golang:1.12-alpine AS build-backend
+WORKDIR /build/
 COPY . .
-RUN apk add --no-cache dep git ca-certificates
-RUN dep ensure
+RUN apk add --no-cache git ca-certificates
 RUN CGO_ENABLED=0 GOOS=linux go build -o goban .
 
 # Build stage frontend
@@ -18,8 +17,7 @@ RUN yarn build
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
-COPY --from=0 /go/src/github.com/thavel/goban/goban .
+COPY --from=0 /build/goban .
 COPY --from=1 /build/dist/ ./ui/
 COPY config.yml .
-COPY rbac.conf .
 ENTRYPOINT [ "./goban", "server" ]
