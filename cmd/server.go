@@ -87,7 +87,7 @@ func ensurePolicies() {
 			e.AddPolicy(policy...)
 		}
 	}
-	auth.SavePolicies()
+	auth.Save()
 }
 
 func runServer(c *cli.Context) error {
@@ -111,11 +111,11 @@ func runServer(c *cli.Context) error {
 	ensureAdmin()
 
 	// Setup authorization policies
-	if err = auth.SetupPolicies(dbConfig); err != nil {
+	if err = auth.Setup(database.DB()); err != nil {
 		logger.Errorf("fail to connect to database: %v", err)
 		return err
 	}
-	defer auth.SavePolicies()
+	defer auth.Save()
 	ensurePolicies()
 
 	// Setup JWT
